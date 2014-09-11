@@ -170,6 +170,7 @@ enum CAPABILITY {
 	NOLOGIN = 0,
 #ifdef HAVE_LIBSSL
 	CRAM,
+        XOAUTH2,
 	STARTTLS,
 #endif
 	UIDPLUS,
@@ -182,6 +183,7 @@ static const char *cap_list[] = {
 	"LOGINDISABLED",
 #ifdef HAVE_LIBSSL
 	"AUTH=CRAM-MD5",
+        "AUTH=XOAUTH2",
 	"STARTTLS",
 #endif
 	"UIDPLUS",
@@ -1698,7 +1700,13 @@ imap_open_store_authenticate2( imap_store_t *ctx )
 		srvc->pass = nfstrdup( arg );
 	}
 #ifdef HAVE_LIBSSL
-	if (CAP(CRAM)) {
+        if (CAP(XOAUTH2)) {
+		struct imap_cmd *cmd = new_imap_cmd( sizeof(*cmd) );
+                info( "Authenticating with XOAUTH2\n" );
+
+		imap_exec( ctx, 0, imap_open_store_authenticate2_p2, "AUTHENTICATE XOAUTH2 %s", srvc->pass);
+		return;
+        } else if (CAP(CRAM)) {
 		struct imap_cmd *cmd = new_imap_cmd( sizeof(*cmd) );
 
 		info( "Authenticating with CRAM-MD5\n" );
