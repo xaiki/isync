@@ -1654,7 +1654,7 @@ imap_open_store_authenticate2( imap_store_t *ctx )
 	if (srvc->pass_cmd) {
 		FILE *fp;
 		int ret;
-		char buffer[80];
+		char buffer[256];
 
 		if (!(fp = popen( srvc->pass_cmd, "r" ))) {
 		  pipeerr:
